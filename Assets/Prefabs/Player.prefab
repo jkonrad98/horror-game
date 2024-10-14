@@ -646,7 +646,7 @@ MonoBehaviour:
   stepRayUpper: {fileID: 1249882802595719588}
   stepRayLower: {fileID: 4086554840660299266}
   stepHeight: 0.3
-  stepIncrement: 0.5
+  stepIncrement: 1.25
   rayParent: {fileID: 7370441834648967554}
   sprintMulti: 1.6
 --- !u!54 &3527372664335172530
