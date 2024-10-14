@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject stepRayLower;
     [SerializeField] float stepHeight = 0.3f;
     [SerializeField] float stepIncrement = 0.1f;
+    [SerializeField] Transform rayParent;
 
 
     [Header("AirDetection")]
@@ -110,52 +112,50 @@ public class PlayerMovement : MonoBehaviour
 
     void StepClimb()
     {
-        Debug.DrawRay(stepRayLower.transform.position, transform.TransformDirection(Vector3.forward)*0.25f, Color.green);
-        Debug.DrawRay(stepRayUpper.transform.position, transform.TransformDirection(Vector3.forward)*0.4f, Color.red);              
+        if (moveDir == Vector3.zero) return;
+        Quaternion targetRotation = Quaternion.LookRotation(moveDir.normalized);
+        rayParent.rotation = targetRotation;
+
+        Debug.DrawRay(stepRayLower.transform.position, rayParent.TransformDirection(Vector3.forward) * 0.25f, Color.green);
+        Debug.DrawRay(stepRayUpper.transform.position, rayParent.TransformDirection(Vector3.forward) * 0.4f, Color.red);
         RaycastHit hitLower;
-        if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(Vector3.forward), out hitLower, 0.25f, stairMask))
+        if (Physics.Raycast(stepRayLower.transform.position, rayParent.TransformDirection(Vector3.forward), out hitLower, 0.25f, stairMask))
         {
             RaycastHit hitUpper;
-            if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(Vector3.forward), out hitUpper, 0.4f, stairMask))
+            if (!Physics.Raycast(stepRayUpper.transform.position, rayParent.TransformDirection(Vector3.forward), out hitUpper, 0.4f, stairMask))
             {
                 rb.position -= new Vector3(0f, -stepIncrement * Time.deltaTime, 0f);
 
             }
         }
 
-
-
-
-
-        //Vector3[] directions = new Vector3[]
+        //Debug.DrawRay(stepRayLower.transform.position, transform.TransformDirection(.75f, 0, .25f), Color.green);
+        //Debug.DrawRay(stepRayUpper.transform.position, transform.TransformDirection(.75f, 0, .25f), Color.red);
+        //RaycastHit hitLower45;
+        //if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(.75f, 0, .25f), out hitLower45, 0.25f, stairMask))
         //{
-        //    new Vector3(0f, 0f, 1f),
-        //    new Vector3(1f, 0f, 1f),
-        //    new Vector3(-1f, 0f, 1f)
-        //};
-
-        //if (moveDir != Vector3.zero)
-        //{
-        //    Debug.Log("Works");
-        //    foreach (Vector3 direction in directions)
+        //    RaycastHit hitUpper45;
+        //    if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(.75f, 0, .25f), out hitUpper45, 0.4f, stairMask))
         //    {
-        //        Debug.DrawRay(stepRayLower.transform.position, transform.TransformDirection(direction), Color.green);
-        //        Debug.DrawRay(stepRayUpper.transform.position, transform.TransformDirection(direction), Color.red);
-        //        Debug.Log("Rays Drawn");
+        //        rb.position -= new Vector3(0f, -stepIncrement * Time.deltaTime, 0f);
 
-        //        if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(direction), out lowerHit, 0.1f))
-        //        {
-        //            Debug.Log("Lower");
-        //            if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(direction), out upperHit, 0.15f))
-        //            {
-        //                Debug.Log("Upper");
-        //                rb.position -= new Vector3(0f, -stepIncrement * Time.deltaTime, 0f);
+        //    }
+        //}
 
-        //            }
-        //        }
+        //Debug.DrawRay(stepRayLower.transform.position, transform.TransformDirection(-.75f, 0, .25f), Color.green);
+        //Debug.DrawRay(stepRayUpper.transform.position, transform.TransformDirection(-.75f, 0, .25f), Color.red);
+        //RaycastHit hitLowerMinus45;
+        //if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(-.75f, 0, .25f), out hitLowerMinus45, 0.25f, stairMask))
+        //{
+        //    RaycastHit hitUpperMinus45;
+        //    if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(-.75f, 0, .25f), out hitUpperMinus45, 0.4f, stairMask))
+        //    {
+        //        rb.position -= new Vector3(0f, -stepIncrement * Time.deltaTime, 0f);
+
         //    }
         //}
     }
+
 
     private void MovePlayer()
     {
