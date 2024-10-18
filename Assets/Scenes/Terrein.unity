@@ -2066,6 +2066,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1789014815
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 66.79228
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 14.463597
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 28.761505
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592262052495104377, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2113042863984886723, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
+      propertyPath: m_Name
+      value: flower_heliophila_4k
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 81cd23234c5ced14a9e623ae2969220c, type: 3}
 --- !u!1 &1817637593
 GameObject:
   m_ObjectHideFlags: 0
@@ -2623,3 +2680,4 @@ SceneRoots:
   - {fileID: 1586765577}
   - {fileID: 650467868}
   - {fileID: 1850660156}
+  - {fileID: 1789014815}
