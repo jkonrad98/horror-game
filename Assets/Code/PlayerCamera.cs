@@ -11,7 +11,24 @@ public class PlayerCamera : MonoBehaviour
 
     float mouseX, mouseY;
 
-    float multiplier = 1f;
+    private float _multiplier = 1f;
+    private float _baseMultiplier = 1f, _zoomMultiplier = 0.3f;
+
+    public float MouseMultiplier
+    {
+        get {  return _multiplier; }
+        set { _multiplier = value; }
+    }
+
+    public float BaseMultiplier
+    {
+        get { return _baseMultiplier; }
+    }
+
+    public float ZoomMultiplier
+    {
+        get { return _zoomMultiplier; }
+    }
 
     float xRot, yRot;
 
@@ -19,6 +36,7 @@ public class PlayerCamera : MonoBehaviour
     {
         cam = Camera.main;
 
+        _multiplier = _baseMultiplier;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -39,8 +57,8 @@ public class PlayerCamera : MonoBehaviour
         mouseX = Input.GetAxisRaw("Mouse X");
         mouseY = Input.GetAxisRaw("Mouse Y");
 
-        yRot += mouseX * sensX * multiplier;
-        xRot -= mouseY * sensY * multiplier;
+        yRot += mouseX * sensX * _multiplier;
+        xRot -= mouseY * sensY * _multiplier;
 
         xRot = Mathf.Clamp(xRot, -90f, 90f);
 

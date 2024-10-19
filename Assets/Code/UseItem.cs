@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class UseItem : MonoBehaviour
 {
-    [SerializeField] GameObject flashlight;
+    [SerializeField] GameObject flashlight, binoculars;
 
     GameObject itemHeld;
     // Start is called before the first frame update
     private void Start()
     {
-        itemHeld = flashlight;
+        itemHeld = binoculars;
     }
 
     void OnChangedItem()
@@ -26,7 +26,7 @@ public class UseItem : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            itemHeld.GetComponent<Flashlight>().UseTheItem();
+            itemHeld.GetComponent<UsableItem>().UseTheItem();
         }
     }
 }
