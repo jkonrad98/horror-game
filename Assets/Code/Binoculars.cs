@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
-using UnityEngine.Assertions.Must;
 
 public class Binoculars : UsableItem
 {
@@ -32,6 +31,8 @@ public class Binoculars : UsableItem
         _liveCamera = _cinemachineBrain.ActiveVirtualCamera;
         transform.position = _handPivot.position;
         transform.SetParent(_handPivot);
+        _animator = GetComponent<Animator>();
+
 
         UpdateLiveCamera();
         if (virtualCam != null)
@@ -54,6 +55,8 @@ public class Binoculars : UsableItem
     }
     public override void UseTheItem()
     {
+        if (!_canUseItem) return;
+        StartCoroutine(ApplyCooldown());
         UpdateLiveCamera();
 
         if (virtualCam != null)
@@ -61,17 +64,24 @@ public class Binoculars : UsableItem
             isActive = !isActive;
             if (isActive)
             {
-                StartCoroutine(LerpZoomIntensity(_desiredFOV));  // Start zoom in
-                _playerCam.MouseMultiplier = _playerCam.ZoomMultiplier;  //Slow down sensitivity
+                _animator.SetTrigger("BinocularsOn");
             }
             else
             {
+                _animator.SetTrigger("BinocularsOff");
                 StartCoroutine(LerpZoomIntensity(_normalFOV));  // Start zoom out
                 _playerCam.MouseMultiplier = _playerCam.BaseMultiplier;  // Reset mouse sensitivity
             }
         }
 
     }
+
+    public void PutBinocularsOn()
+    {
+        StartCoroutine(LerpZoomIntensity(_desiredFOV));  // Start zoom in
+        _playerCam.MouseMultiplier = _playerCam.ZoomMultiplier;  //Slow down sensitivity
+    }
+
     private IEnumerator LerpZoomIntensity(float targetZoom)
     {
         if (virtualCam == null)

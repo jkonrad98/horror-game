@@ -2609,6 +2609,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1062844783}
+  - component: {fileID: 1062844784}
   m_Layer: 7
   m_Name: RightHandPivot
   m_TagString: Untagged
@@ -2632,6 +2633,20 @@ Transform:
   - {fileID: 1589279955}
   m_Father: {fileID: 1210886750832138}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1062844784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062844782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6987ececa48d4144a831689b8d3ddcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _handPivot: {fileID: 0}
+  _cameraTransform: {fileID: 0}
 --- !u!1 &1143703031
 GameObject:
   m_ObjectHideFlags: 0
@@ -3862,6 +3877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1660b5ee6fdd154458e62ec196620b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cooldownDuration: 0.6
 --- !u!1 &2036472610
 GameObject:
   m_ObjectHideFlags: 0
