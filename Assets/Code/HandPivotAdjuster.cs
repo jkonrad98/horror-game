@@ -4,33 +4,21 @@ using UnityEngine;
 
 public class HandPivotAdjuster : MonoBehaviour
 {
-    [SerializeField] private Transform _handPivot;
-    [SerializeField] private Transform _cameraTransform;
-   
+    [SerializeField] private Transform _handPivot;    // Reference to your hand pivot (RightHandPivot)
+    [SerializeField] private PlayerCamera _playerCamera; // Reference to your PlayerCamera script
 
-    void Start()
+    private void Start()
     {
-        if (_handPivot == null)
-        {
-            _handPivot = this.transform;
-        }
-        if (_cameraTransform == null)
-        {
-            _cameraTransform = Camera.main.transform;
-        }
+        _handPivot = this.transform;
+        _playerCamera = GetComponentInParent<PlayerCamera>();
     }
 
-    void FixedUpdate()
+    void LateUpdate()
     {
-        float cameraPitch = _cameraTransform.eulerAngles.x;
+        // Create a rotation from the xRot and yRot values
+        Quaternion handRotation = Quaternion.Euler(_playerCamera.xRot, 0, 0);
 
-        // Convert pitch to range between -180 and 180 if needed
-        if (cameraPitch > 180f)
-        {
-            cameraPitch -= 360f;
-        }
-
-        // Rotate the hand pivot only on the X axis, keeping its relative position to the player
-        _handPivot.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
+        // Apply the rotation to the hand pivot
+        _handPivot.rotation = handRotation;
     }
 }

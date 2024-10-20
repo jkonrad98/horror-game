@@ -20,7 +20,8 @@ public class Flashlight : UsableItem
         flashlightSpotlight = GetComponentInChildren<Light>();
         _targetToFollow = Camera.main.transform;
         _playerGO = GameObject.FindGameObjectWithTag("Player");
-        _handPivot = _playerGO.transform.Find("RightHandPivot");
+        //_handPivot = _playerGO.transform.Find("RightHandPivot");
+        _handPivot = GameObject.FindGameObjectWithTag("Hand").transform;
         _baseLightStrength = flashlightSpotlight.intensity;
 
         transform.position = _handPivot.position;

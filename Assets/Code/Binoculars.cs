@@ -26,7 +26,8 @@ public class Binoculars : UsableItem
         _playerCam = Camera.main.GetComponentInParent<PlayerCamera>();
         _normalFOV = Camera.main.fieldOfView;
         _playerGO = GameObject.FindGameObjectWithTag("Player");
-        _handPivot = _playerGO.transform.Find("RightHandPivot");
+        //_handPivot = _playerGO.transform.Find("RightHandPivot");
+        _handPivot = GameObject.FindGameObjectWithTag("Hand").transform;
         _cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
         _liveCamera = _cinemachineBrain.ActiveVirtualCamera;
         transform.position = _handPivot.position;

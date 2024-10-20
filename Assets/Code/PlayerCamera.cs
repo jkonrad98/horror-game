@@ -6,7 +6,8 @@ public class PlayerCamera : MonoBehaviour
 {
     [Header("Camera")]
     public float sensX = 1f, sensY = 1f;
-
+    public float xRot { get; set; }
+    public float yRot { get; set; }
     Camera cam;
 
     float mouseX, mouseY;
@@ -30,7 +31,7 @@ public class PlayerCamera : MonoBehaviour
         get { return _zoomMultiplier; }
     }
 
-    float xRot, yRot;
+    
 
     private void Start()
     {

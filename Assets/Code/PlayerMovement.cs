@@ -128,32 +128,6 @@ public class PlayerMovement : MonoBehaviour
 
             }
         }
-
-        //Debug.DrawRay(stepRayLower.transform.position, transform.TransformDirection(.75f, 0, .25f), Color.green);
-        //Debug.DrawRay(stepRayUpper.transform.position, transform.TransformDirection(.75f, 0, .25f), Color.red);
-        //RaycastHit hitLower45;
-        //if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(.75f, 0, .25f), out hitLower45, 0.25f, stairMask))
-        //{
-        //    RaycastHit hitUpper45;
-        //    if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(.75f, 0, .25f), out hitUpper45, 0.4f, stairMask))
-        //    {
-        //        rb.position -= new Vector3(0f, -stepIncrement * Time.deltaTime, 0f);
-
-        //    }
-        //}
-
-        //Debug.DrawRay(stepRayLower.transform.position, transform.TransformDirection(-.75f, 0, .25f), Color.green);
-        //Debug.DrawRay(stepRayUpper.transform.position, transform.TransformDirection(-.75f, 0, .25f), Color.red);
-        //RaycastHit hitLowerMinus45;
-        //if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(-.75f, 0, .25f), out hitLowerMinus45, 0.25f, stairMask))
-        //{
-        //    RaycastHit hitUpperMinus45;
-        //    if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(-.75f, 0, .25f), out hitUpperMinus45, 0.4f, stairMask))
-        //    {
-        //        rb.position -= new Vector3(0f, -stepIncrement * Time.deltaTime, 0f);
-
-        //    }
-        //}
     }
 
 
