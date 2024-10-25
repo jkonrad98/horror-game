@@ -32,11 +32,11 @@ public class PlayerMovement : MonoBehaviour
     
     [Header("Stairs and Slope")]
     [SerializeField] private float _maxSlopeAngle = 45f;
-    [SerializeField] private float _slopeSpeedMultiplierFactor = 50f;
+    [SerializeField] private float _slopeSpeedMultiplierFactor = 1.25f;
     [SerializeField] private float _stepHeight = 0.3f;
     [SerializeField] private float _stepIncrement = 0.1f;
     [SerializeField] private float _maxSlopeMultiplier = 1.5f;
-    private RaycastHit _slopeHit;
+    private RaycastHit _slopeHit, _slopeHitAhead;
     private Vector3 _slopeMoveDirection;
     private float _currentSlopeAngle;
     private float _slopeMultiplier;
@@ -64,15 +64,13 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         ControlDrag();
-
-        _slopeMoveDirection = Vector3.ProjectOnPlane(_playerInput.MoveDirection, _slopeHit.normal);
         
         if (_playerInput.JumpPressed)
         {
             Jump();
         }
     }
-    void ControlDrag()
+    private void ControlDrag()
     {
         //Set player drag to groundDrag float or AirDrag float if _isGrounded
         _rb.drag = _isGrounded ? _groundDrag : _airDrag;
@@ -145,106 +143,85 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_isGrounded)
         {
-            if (OnSlope())
+
+            bool isOnSlope = OnSlope();
+            bool isSlopeAhead = OnSlopeAhead(out float slopeAngleAhead);
+            float slopeAngleToUse = 0f;
+            Vector3 slopeNormalToUse = Vector3.up;
+
+            if (isOnSlope)
             {
-                //Vector3 slopeDirection = Vector3.ProjectOnPlane(_playerInput.MoveDirection.normalized, _slopeHit.normal).normalized;
-                float angleRad = _currentSlopeAngle * Mathf.Deg2Rad;
-                float slopeMultiplier = (1f / Mathf.Cos(angleRad)) * _slopeSpeedMultiplierFactor;
-                Debug.Log(angleRad);
-                Debug.Log(slopeMultiplier);
-
-                Vector3 slopeDirection = Vector3.ProjectOnPlane(_playerInput.MoveDirection.normalized, _slopeHit.normal).normalized;
-                _rb.AddForce(slopeDirection * _effectiveSpeed * slopeMultiplier, ForceMode.Acceleration);
-
-                //if (_isMovingUphill)
-                //{
-                //    _slopeMultiplier = 1f + (_currentSlopeAngle * _slopeSpeedMultiplierFactor);
-                //    _slopeMultiplier = Mathf.Clamp(_slopeMultiplier, 1f, _maxSlopeMultiplier);
-
-                //    _rb.AddForce(slopeDirection * _effectiveSpeed * _slopeMultiplier, ForceMode.Acceleration);
-                //}
-                //else
-                //{
-                //    _rb.AddForce(slopeDirection * _effectiveSpeed, ForceMode.Acceleration);
-                //}
+                slopeAngleToUse = _currentSlopeAngle;
+                slopeNormalToUse = _slopeHit.normal;
             }
-            else
+            else if (isSlopeAhead)
+            {
+                slopeAngleToUse = slopeAngleAhead;
+                slopeNormalToUse = _slopeHitAhead.normal;
+            }
+            if (slopeAngleToUse > 0f) //movement boost if on a slope
+            {
+                float angleRad = slopeAngleToUse * Mathf.Deg2Rad;
+                float slopeMultiplier = (1f / Mathf.Cos(angleRad)) * _slopeSpeedMultiplierFactor;
+                slopeMultiplier = Mathf.Clamp(slopeMultiplier, 1f, _maxSlopeMultiplier);
+
+                Vector3 slopeDirection = Vector3.ProjectOnPlane(_playerInput.MoveDirection.normalized, slopeNormalToUse).normalized;
+                _rb.AddForce(slopeDirection * _effectiveSpeed * slopeMultiplier, ForceMode.Acceleration);
+            }
+            else //movement if flat surfaces or in air
             {
                 _rb.AddForce(_playerInput.MoveDirection * _effectiveSpeed, ForceMode.Acceleration);
             }
         }
 
-        
-        
-        //if(_isGrounded && !OnSlope())
-        //{
-        //    if (_playerInput.SprintHeld)
-        //    {
-        //        _rb.AddForce(_playerInput.MoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier*_sprintMulti, ForceMode.Acceleration);
-        //        //rb.AddRelativeForce(movementDir * moveSpeed * sprintMulti, ForceMode.Acceleration);
-        //    }
-        //    else
-        //    {
-        //        _rb.AddForce(_playerInput.MoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier, ForceMode.Acceleration);
-        //        //rb.AddRelativeForce(movementDir * moveSpeed, ForceMode.Acceleration);
-        //    }
-        //}
-        //else if(_isGrounded && OnSlope())
-        //{
-        //    if (_playerInput.SprintHeld)
-        //    {
-        //        _rb.AddForce(_slopeMoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier * _sprintMulti, ForceMode.Acceleration);
-        //        //rb.AddRelativeForce(movementDir * moveSpeed * sprintMulti, ForceMode.Acceleration);
-        //    }
-        //    else
-        //    {
-        //        _rb.AddForce(_slopeMoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier, ForceMode.Acceleration);
-        //        //rb.AddRelativeForce(movementDir * moveSpeed, ForceMode.Acceleration);
-        //    }
-        //}
-        //else
-        //{
-        //    if (_playerInput.SprintHeld)
-        //    {
-        //        _rb.AddForce(_playerInput.MoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier * _sprintMulti * _airMoveMulti, ForceMode.Acceleration);
-        //        //rb.AddRelativeForce(movementDir * moveSpeed * sprintMulti * airMoveMulti, ForceMode.Acceleration);
-        //    }
-        //    else
-        //    {
-        //        _rb.AddForce(_playerInput.MoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier * _airMoveMulti, ForceMode.Acceleration);
-        //        //rb.AddRelativeForce(movementDir * moveSpeed * airMoveMulti, ForceMode.Acceleration);
-        //    }
-        //}
     }
 
-    void Jump()
+    private void Jump()
     {
         if (_isGrounded)
         {
             _rb.AddForce(transform.up * _jumpForce, ForceMode.Impulse);
         }
     }
-
-    bool OnSlope()
+    private bool OnSlopeAhead(out float slopeAngleAhead)
     {
-        //if(Physics.Raycast(transform.position, Vector3.down, out _slopeHit, 1.4f))
-        //{
-        //    if(_slopeHit.normal != Vector3.up)
-        //    {
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //}
-        //return false;
+        slopeAngleAhead = 0f;
+
+        Vector3 origin = transform.position + Vector3.up * 0.1f;
+
+        Vector3 direction = _playerInput.MoveDirection.normalized;
+        if (direction == Vector3.zero)
+        {
+            return false;
+        }
+
+        float rayAngle = 45f;
+
+        Vector3 rotationAxis = Vector3.Cross(direction, Vector3.up);
+        Vector3 angledDirection = Quaternion.AngleAxis(-rayAngle, rotationAxis) * direction;
+
+
+        float rayLength = 1.5f;
+        Debug.DrawRay(origin, angledDirection * rayLength, Color.red);
+        // Perform the raycast
+        if (Physics.Raycast(origin, angledDirection, out RaycastHit hit, rayLength, _walkableMask))
+        {
+            slopeAngleAhead = Vector3.Angle(hit.normal, Vector3.up);
+            if (slopeAngleAhead > 0f && slopeAngleAhead <= _maxSlopeAngle)
+            {
+                _slopeHitAhead = hit;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool OnSlope()
+    {
         if (Physics.Raycast(transform.position, Vector3.down, out _slopeHit, 1.5f))
         {
             _currentSlopeAngle = Vector3.Angle(_slopeHit.normal, Vector3.up);
-
-            _movementDirectionDot = Vector3.Dot(_playerInput.MoveDirection.normalized, _slopeHit.normal);
-            _isMovingUphill = _movementDirectionDot > 0f;
 
             return _currentSlopeAngle > 0f && _currentSlopeAngle <= _maxSlopeAngle;
         }
@@ -252,7 +229,7 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
-    void GroundCheck()
+    private void GroundCheck()
     {
         //if (Physics.Raycast(transform.position, direction, out hit, rayDist + 0.1f) && hit.collider.CompareTag("Terrain"))
         if (Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), _groundCheckSphereRadius, _walkableMask))
