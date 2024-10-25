@@ -6,8 +6,7 @@ using Cinemachine;
 public class Binoculars : UsableItem
 {
     private Transform _handPivot;
-    private GameObject _playerGO;
-    private float _normalFOV, _desiredFOV = 30f;
+    private float _normalFOV, _desiredFOV = 20f;
     private float _zoomTransitionDuration = 0.1f;
     private PlayerCamera _playerCam;
 
@@ -25,8 +24,6 @@ public class Binoculars : UsableItem
     {
         _playerCam = Camera.main.GetComponentInParent<PlayerCamera>();
         _normalFOV = Camera.main.fieldOfView;
-        _playerGO = GameObject.FindGameObjectWithTag("Player");
-        //_handPivot = _playerGO.transform.Find("RightHandPivot");
         _handPivot = GameObject.FindGameObjectWithTag("Hand").transform;
         _cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
         _liveCamera = _cinemachineBrain.ActiveVirtualCamera;

@@ -5,94 +5,76 @@ using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
 {
-    Rigidbody rb;
-    [Header("Movement")]
-    [SerializeField] float moveSpeed = 6f, moveSpeedMulti = 10f, jumpForce = 10f, airMoveMulti = 0.5f;
-    float groundDrag = 6f, airDrag = 0f, groundCheckSphereRadius = 0.3f;
-    float horizonalMovement, verticalMovement;
-    Vector3 moveDir;
-    [SerializeField] LayerMask groundMask, stairMask, walkableMask;
-    RaycastHit slopeHit;
-    Vector3 slopeMoveDirection;
+    [Header("References")]
+    private Rigidbody _rb;
+    [SerializeField] private LayerMask _groundMask, _stairMask, _walkableMask;
+    [SerializeField] private GameObject _stepRayUpper;
+    [SerializeField] private GameObject _stepRayLower;
+    [SerializeField] private Transform _rayParent;
+    private PlayerInput _playerInput;
 
+    [Header("Movement Settings")]
+    [SerializeField] private float _movementBaseSpeed = 6f, _movementSpeedMultiplier = 10f;
+    [SerializeField] private float _maxSpeed = 10f;
+    [SerializeField] float sprintMulti = 1.5f;
+    [SerializeField] private float _jumpForce = 10f;
 
+    [Header("Ground & Air Detection")]
+    [SerializeField] private float _airMoveMulti = 0.5f;
+    [SerializeField] private float _groundCheckSphereRadius = 0.3f;
+    private bool _isGrounded;
 
-    public float maxSpeed = 10f;
-    public float tempY;
-
-    [Header("Handling Stairs")]
-    [SerializeField] GameObject stepRayUpper;
-    [SerializeField] GameObject stepRayLower;
+    [Header("Stair & Slope Handling")]
+    private RaycastHit _slopeHit;
+    private Vector3 _slopeMoveDirection;
     [SerializeField] float stepHeight = 0.3f;
     [SerializeField] float stepIncrement = 0.1f;
-    [SerializeField] Transform rayParent;
+
+    [Header("Drag Handling")]
+    [SerializeField] private float _groundDrag = 6f, _airDrag = 0f;
+
+    //float horizonalMovement, verticalMovement;
+    //Vector3 _playerInput.MoveDirection;
+    //bool _playerInput.SprintHeld;
 
 
-    [Header("AirDetection")]
-    float rayDist = 1f;
-    bool isGrounded;
-
-    [Header("Sprint")]
-    [SerializeField] float sprintMulti = 1.5f;
-    bool isSprinting;
+    private float _tempY;
 
     private void Start()
     {
         //Rigidbody reference
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
+        _rb = GetComponent<Rigidbody>();
+        _rb.freezeRotation = true;
+
+        _playerInput = GetComponent<PlayerInput>();
+        if (_playerInput == null) Debug.LogError("No input class found");
 
         //Stairs handling
-        stepRayUpper.transform.localPosition = new Vector3(stepRayUpper.transform.localPosition.x, -1 + stepHeight, stepRayUpper.transform.localPosition.z);
-        walkableMask = groundMask | stairMask;
+        _stepRayUpper.transform.localPosition = new Vector3(_stepRayUpper.transform.localPosition.x, -1 + stepHeight, _stepRayUpper.transform.localPosition.z);
+        _walkableMask = _groundMask | _stairMask;
         
     }
 
     private void Update()
     {
-        MyInput();
         ControlDrag();
 
-        slopeMoveDirection = Vector3.ProjectOnPlane(moveDir, slopeHit.normal);
-
-    }
-
-    void MyInput()
-    {
-        //Movement Input
-        horizonalMovement = Input.GetAxisRaw("Horizontal");
-        verticalMovement = Input.GetAxisRaw("Vertical");
-
-        //movementDir = new Vector3(horizonalMovement, 0, verticalMovement);
-
-        moveDir = transform.forward * verticalMovement + transform.right * horizonalMovement;
-
-        //Inputs
-        if (Input.GetKeyDown(KeyCode.Space))
+        _slopeMoveDirection = Vector3.ProjectOnPlane(_playerInput.MoveDirection, _slopeHit.normal);
+        
+        if (_playerInput.JumpPressed)
         {
             Jump();
         }
-
-
-        if(Input.GetKey(KeyCode.LeftShift))
-        {
-            isSprinting = true;
-        }
-        else
-        {
-            isSprinting = false;
-        }
     }
-
     void ControlDrag()
     {
-        if(isGrounded)
+        if(_isGrounded)
         {
-            rb.drag = groundDrag;
+            _rb.drag = _groundDrag;
         }
         else
         {
-            rb.drag = airDrag;
+            _rb.drag = _airDrag;
         }
     }
 
@@ -102,29 +84,31 @@ public class PlayerMovement : MonoBehaviour
         GroundCheck();
         StepClimb();
 
-        tempY = rb.velocity.y;
-        if(rb.velocity.magnitude > maxSpeed)
+
+
+        _tempY = _rb.velocity.y;
+        if (_rb.velocity.magnitude > _maxSpeed)
         {
-            rb.velocity = rb.velocity.normalized * maxSpeed;
+            _rb.velocity = _rb.velocity.normalized * _maxSpeed;
         }
-        rb.velocity = new Vector3(rb.velocity.x, tempY, rb.velocity.z);
+        _rb.velocity = new Vector3(_rb.velocity.x, _tempY, _rb.velocity.z);
     }
 
     void StepClimb()
     {
-        if (moveDir == Vector3.zero) return;
-        Quaternion targetRotation = Quaternion.LookRotation(moveDir.normalized);
-        rayParent.rotation = targetRotation;
+        if (_playerInput.MoveDirection == Vector3.zero) return;
+        Quaternion targetRotation = Quaternion.LookRotation(_playerInput.MoveDirection.normalized);
+        _rayParent.rotation = targetRotation;
 
-        Debug.DrawRay(stepRayLower.transform.position, rayParent.TransformDirection(Vector3.forward) * 0.25f, Color.green);
-        Debug.DrawRay(stepRayUpper.transform.position, rayParent.TransformDirection(Vector3.forward) * 0.4f, Color.red);
+        Debug.DrawRay(_stepRayLower.transform.position, _rayParent.TransformDirection(Vector3.forward) * 0.25f, Color.green);
+        Debug.DrawRay(_stepRayUpper.transform.position, _rayParent.TransformDirection(Vector3.forward) * 0.4f, Color.red);
         RaycastHit hitLower;
-        if (Physics.Raycast(stepRayLower.transform.position, rayParent.TransformDirection(Vector3.forward), out hitLower, 0.25f, stairMask))
+        if (Physics.Raycast(_stepRayLower.transform.position, _rayParent.TransformDirection(Vector3.forward), out hitLower, 0.25f, _stairMask))
         {
             RaycastHit hitUpper;
-            if (!Physics.Raycast(stepRayUpper.transform.position, rayParent.TransformDirection(Vector3.forward), out hitUpper, 0.4f, stairMask))
+            if (!Physics.Raycast(_stepRayUpper.transform.position, _rayParent.TransformDirection(Vector3.forward), out hitUpper, 0.4f, _stairMask))
             {
-                rb.position -= new Vector3(0f, -stepIncrement * Time.deltaTime, 0f);
+                _rb.position -= new Vector3(0f, -stepIncrement * Time.deltaTime, 0f);
 
             }
         }
@@ -133,42 +117,42 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
-        if(isGrounded && !CheckForSlopes())
+        if(_isGrounded && !CheckForSlopes())
         {
-            if (isSprinting)
+            if (_playerInput.SprintHeld)
             {
-                rb.AddForce(moveDir.normalized * moveSpeed * moveSpeedMulti*sprintMulti, ForceMode.Acceleration);
+                _rb.AddForce(_playerInput.MoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier*sprintMulti, ForceMode.Acceleration);
                 //rb.AddRelativeForce(movementDir * moveSpeed * sprintMulti, ForceMode.Acceleration);
             }
             else
             {
-                rb.AddForce(moveDir.normalized * moveSpeed * moveSpeedMulti, ForceMode.Acceleration);
+                _rb.AddForce(_playerInput.MoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier, ForceMode.Acceleration);
                 //rb.AddRelativeForce(movementDir * moveSpeed, ForceMode.Acceleration);
             }
         }
-        else if(isGrounded && CheckForSlopes())
+        else if(_isGrounded && CheckForSlopes())
         {
-            if (isSprinting)
+            if (_playerInput.SprintHeld)
             {
-                rb.AddForce(slopeMoveDirection.normalized * moveSpeed * moveSpeedMulti * sprintMulti, ForceMode.Acceleration);
+                _rb.AddForce(_slopeMoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier * sprintMulti, ForceMode.Acceleration);
                 //rb.AddRelativeForce(movementDir * moveSpeed * sprintMulti, ForceMode.Acceleration);
             }
             else
             {
-                rb.AddForce(slopeMoveDirection.normalized * moveSpeed * moveSpeedMulti, ForceMode.Acceleration);
+                _rb.AddForce(_slopeMoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier, ForceMode.Acceleration);
                 //rb.AddRelativeForce(movementDir * moveSpeed, ForceMode.Acceleration);
             }
         }
         else
         {
-            if (isSprinting)
+            if (_playerInput.SprintHeld)
             {
-                rb.AddForce(moveDir.normalized * moveSpeed * moveSpeedMulti * sprintMulti * airMoveMulti, ForceMode.Acceleration);
+                _rb.AddForce(_playerInput.MoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier * sprintMulti * _airMoveMulti, ForceMode.Acceleration);
                 //rb.AddRelativeForce(movementDir * moveSpeed * sprintMulti * airMoveMulti, ForceMode.Acceleration);
             }
             else
             {
-                rb.AddForce(moveDir.normalized * moveSpeed * moveSpeedMulti * airMoveMulti, ForceMode.Acceleration);
+                _rb.AddForce(_playerInput.MoveDirection.normalized * _movementBaseSpeed * _movementSpeedMultiplier * _airMoveMulti, ForceMode.Acceleration);
                 //rb.AddRelativeForce(movementDir * moveSpeed * airMoveMulti, ForceMode.Acceleration);
             }
         }
@@ -176,17 +160,17 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
-        if (isGrounded)
+        if (_isGrounded)
         {
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            _rb.AddForce(transform.up * _jumpForce, ForceMode.Impulse);
         }
     }
 
     bool CheckForSlopes()
     {
-        if(Physics.Raycast(transform.position, Vector3.down, out slopeHit, 1.4f))
+        if(Physics.Raycast(transform.position, Vector3.down, out _slopeHit, 1.4f))
         {
-            if(slopeHit.normal != Vector3.up)
+            if(_slopeHit.normal != Vector3.up)
             {
                 return true;
             }
@@ -201,13 +185,13 @@ public class PlayerMovement : MonoBehaviour
     void GroundCheck()
     {
         //if (Physics.Raycast(transform.position, direction, out hit, rayDist + 0.1f) && hit.collider.CompareTag("Terrain"))
-        if (Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundCheckSphereRadius, walkableMask))
+        if (Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), _groundCheckSphereRadius, _walkableMask))
         {
-            isGrounded = true;
+            _isGrounded = true;
         }
         else
         {
-            isGrounded = false;
+            _isGrounded = false;
         }
     }
 }
