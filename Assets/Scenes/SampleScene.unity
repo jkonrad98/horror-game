@@ -4865,7 +4865,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4247721053027761821, guid: 01837de777ddb9c489da31010d849c3f, type: 3}
       propertyPath: _jumpForce
-      value: 75
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 4247721053027761821, guid: 01837de777ddb9c489da31010d849c3f, type: 3}
       propertyPath: _rayParent
@@ -4873,7 +4873,11 @@ PrefabInstance:
       objectReference: {fileID: 655328780}
     - target: {fileID: 4247721053027761821, guid: 01837de777ddb9c489da31010d849c3f, type: 3}
       propertyPath: sprintMulti
-      value: 2
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4247721053027761821, guid: 01837de777ddb9c489da31010d849c3f, type: 3}
+      propertyPath: _airMoveMulti
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 4247721053027761821, guid: 01837de777ddb9c489da31010d849c3f, type: 3}
       propertyPath: _stepRayLower
@@ -4883,6 +4887,10 @@ PrefabInstance:
       propertyPath: _stepRayUpper
       value: 
       objectReference: {fileID: 2124520261}
+    - target: {fileID: 4247721053027761821, guid: 01837de777ddb9c489da31010d849c3f, type: 3}
+      propertyPath: stepIncrement
+      value: 1.25
+      objectReference: {fileID: 0}
     - target: {fileID: 4247721053027761821, guid: 01837de777ddb9c489da31010d849c3f, type: 3}
       propertyPath: _stairMask.m_Bits
       value: 256

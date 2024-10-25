@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _maxSpeed = 10f;
     [SerializeField] float sprintMulti = 1.5f;
     [SerializeField] private float _jumpForce = 10f;
+    private Vector3 _flatVelocity;
 
     [Header("Ground & Air Detection")]
     [SerializeField] private float _airMoveMulti = 0.5f;
@@ -32,13 +33,6 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Drag Handling")]
     [SerializeField] private float _groundDrag = 6f, _airDrag = 0f;
-
-    //float horizonalMovement, verticalMovement;
-    //Vector3 _playerInput.MoveDirection;
-    //bool _playerInput.SprintHeld;
-
-
-    private float _tempY;
 
     private void Start()
     {
@@ -68,14 +62,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void ControlDrag()
     {
-        if(_isGrounded)
-        {
-            _rb.drag = _groundDrag;
-        }
-        else
-        {
-            _rb.drag = _airDrag;
-        }
+        _rb.drag = _isGrounded ? _groundDrag : _airDrag;
     }
 
     private void FixedUpdate()
@@ -85,16 +72,17 @@ public class PlayerMovement : MonoBehaviour
         StepClimb();
 
 
-
-        _tempY = _rb.velocity.y;
+        _flatVelocity = new Vector3(_rb.velocity.x, 0 , _rb.velocity.z);
         if (_rb.velocity.magnitude > _maxSpeed)
         {
-            _rb.velocity = _rb.velocity.normalized * _maxSpeed;
+            Vector3 limitedVelocity = _flatVelocity.normalized * _maxSpeed;
+            _rb.velocity = new Vector3(limitedVelocity.x, _rb.velocity.y, limitedVelocity.z);
+
         }
-        _rb.velocity = new Vector3(_rb.velocity.x, _tempY, _rb.velocity.z);
+        
     }
 
-    void StepClimb()
+    private void StepClimb()
     {
         if (_playerInput.MoveDirection == Vector3.zero) return;
         Quaternion targetRotation = Quaternion.LookRotation(_playerInput.MoveDirection.normalized);
@@ -117,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
-        if(_isGrounded && !CheckForSlopes())
+        if(_isGrounded && !OnSlope())
         {
             if (_playerInput.SprintHeld)
             {
@@ -130,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
                 //rb.AddRelativeForce(movementDir * moveSpeed, ForceMode.Acceleration);
             }
         }
-        else if(_isGrounded && CheckForSlopes())
+        else if(_isGrounded && OnSlope())
         {
             if (_playerInput.SprintHeld)
             {
@@ -166,7 +154,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    bool CheckForSlopes()
+    bool OnSlope()
     {
         if(Physics.Raycast(transform.position, Vector3.down, out _slopeHit, 1.4f))
         {
