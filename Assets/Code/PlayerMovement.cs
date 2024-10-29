@@ -201,7 +201,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 angledDirection = Quaternion.AngleAxis(-rayAngle, rotationAxis) * direction;
 
 
-        float rayLength = 1.5f;
+        float rayLength = 1.1f;
         Debug.DrawRay(origin, angledDirection * rayLength, Color.red);
         // Perform the raycast
         if (Physics.Raycast(origin, angledDirection, out RaycastHit hit, rayLength, _walkableMask))
