@@ -10,6 +10,10 @@ public class PlayerCamera : MonoBehaviour
     public float yRot { get; set; }
     Camera cam;
 
+    public bool canRotate { get; set; }
+
+    PlayerInput input;
+
     float mouseX, mouseY;
 
     private float _multiplier = 1f;
@@ -36,7 +40,6 @@ public class PlayerCamera : MonoBehaviour
     private void Start()
     {
         cam = Camera.main;
-
         _multiplier = _baseMultiplier;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -49,12 +52,14 @@ public class PlayerCamera : MonoBehaviour
     }
     private void FixedUpdate()
     {
+ 
         cam.transform.localRotation = Quaternion.Euler(xRot, 0, 0);
         transform.rotation = Quaternion.Euler(0, yRot, 0);
     }
 
     void GetInput()
     {
+        if (!canRotate) return;
         mouseX = Input.GetAxisRaw("Mouse X");
         mouseY = Input.GetAxisRaw("Mouse Y");
 

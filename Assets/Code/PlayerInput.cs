@@ -12,6 +12,7 @@ public class PlayerInput : MonoBehaviour
     // Action inputs
     public bool JumpPressed { get; private set; }
     public bool SprintHeld { get; private set; }
+    public bool AltPressed { get; private set; }
 
     void Update()
     {
@@ -32,5 +33,8 @@ public class PlayerInput : MonoBehaviour
 
         // Sprint Input
         SprintHeld = Input.GetKey(KeyCode.LeftShift);
+
+        // Mouse Cursor Shown Input
+        AltPressed = Input.GetKey(KeyCode.LeftAlt);
     }
 }
