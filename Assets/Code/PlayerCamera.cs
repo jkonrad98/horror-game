@@ -8,11 +8,8 @@ public class PlayerCamera : MonoBehaviour
     public float sensX = 1f, sensY = 1f;
     public float xRot { get; set; }
     public float yRot { get; set; }
-    Camera cam;
-
+    [SerializeField] Transform _camPivot;
     public bool canRotate { get; set; }
-
-    PlayerInput input;
 
     float mouseX, mouseY;
 
@@ -34,12 +31,9 @@ public class PlayerCamera : MonoBehaviour
     {
         get { return _zoomMultiplier; }
     }
-
     
-
     private void Start()
     {
-        cam = Camera.main;
         _multiplier = _baseMultiplier;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -53,7 +47,7 @@ public class PlayerCamera : MonoBehaviour
     private void FixedUpdate()
     {
  
-        cam.transform.localRotation = Quaternion.Euler(xRot, 0, 0);
+        _camPivot.transform.localRotation = Quaternion.Euler(xRot, 0, 0);
         transform.rotation = Quaternion.Euler(0, yRot, 0);
     }
 
