@@ -22,13 +22,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _maxSpeed = 10f;
     [SerializeField] private float _sprintMulti = 1.5f;
     [SerializeField] private float _jumpForce = 10f;
-    private Vector3 _flatVelocity;
+    public Vector3 _flatVelocity {  get; private set; }
     private float _effectiveSpeed;
 
     [Header("Ground & Air Detection")]
     [SerializeField] private float _airMoveMulti = 0.5f;
     [SerializeField] private float _groundCheckSphereRadius = 0.3f;
-    private bool _isGrounded;
+    public bool _isGrounded { get; private set; }
     
     [Header("Stairs and Slope")]
     [SerializeField] private float _maxSlopeAngle = 45f;
@@ -89,13 +89,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void LimitSpeed()
     {
-        _flatVelocity = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);
+        _flatVelocity = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);        
+
         if (_rb.velocity.magnitude > _maxSpeed)
         {
             Vector3 limitedVelocity = _flatVelocity.normalized * _maxSpeed;
             _rb.velocity = new Vector3(limitedVelocity.x, _rb.velocity.y, limitedVelocity.z);
 
         }
+
     }
 
     private void PreventSlopeSliding()
@@ -168,12 +170,11 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 slopeDirection = Vector3.ProjectOnPlane(_playerInput.MoveDirection.normalized, slopeNormalToUse).normalized;
                 _rb.AddForce(slopeDirection * _effectiveSpeed * slopeMultiplier, ForceMode.Acceleration);
             }
-            else //movement if flat surfaces or in air
+            else //movement if flat surfaces
             {
                 _rb.AddForce(_playerInput.MoveDirection * _effectiveSpeed, ForceMode.Acceleration);
             }
         }
-
     }
 
     private void Jump()

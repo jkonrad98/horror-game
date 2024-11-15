@@ -27,7 +27,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     renderPassEvent: 550
-    screenHeight: 240
+    screenHeight: 360
 --- !u!114 &-344035207762238195
 MonoBehaviour:
   m_ObjectHideFlags: 0
