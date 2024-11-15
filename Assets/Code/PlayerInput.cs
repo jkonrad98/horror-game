@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
+    public static PlayerInput Instance { get; private set; }
     // Movement inputs
     public float HorizontalInput { get; private set; }
     public float VerticalInput { get; private set; }
@@ -14,12 +15,24 @@ public class PlayerInput : MonoBehaviour
     public bool SprintHeld { get; private set; }
     public bool AltPressed { get; private set; }
 
-    void Update()
+    public bool LightFlickerPressed { get; private set; }
+    private void Awake()
+    {
+        // Ensure a single instance
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // Optional: Persist between scenes
+    }
+    private void Update()
     {
         HandleInput();
     }
 
-    void HandleInput()
+    private void HandleInput()
     {
         // Movement Input
         HorizontalInput = Input.GetAxisRaw("Horizontal");
@@ -36,5 +49,7 @@ public class PlayerInput : MonoBehaviour
 
         // Mouse Cursor Shown Input
         AltPressed = Input.GetKey(KeyCode.LeftAlt);
+
+        LightFlickerPressed = Input.GetKeyDown(KeyCode.G);
     }
 }

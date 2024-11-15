@@ -105,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
         if (_isGrounded && OnSlope() && _rb.velocity.y <= 0f && _playerInput.MoveDirection == Vector3.zero)
         {
             _rb.AddForce(-_slopeHit.normal * Physics.gravity.magnitude, ForceMode.Acceleration);
-            Debug.Log(Physics.gravity.magnitude);
+            //Debug.Log(Physics.gravity.magnitude);
         }
     }
 

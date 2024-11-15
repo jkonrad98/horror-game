@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 
-public class Flashlight : UsableItem
+public class FlashlightMgr : UsableItem
 {
     private Vector3 _offsetVector;
     private Transform _targetToFollow, _handPivot;
