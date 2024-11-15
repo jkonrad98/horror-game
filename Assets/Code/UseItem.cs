@@ -10,7 +10,9 @@ public class UseItem : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        itemHeld = binoculars;
+        itemHeld = flashlight;
+        //itemHeld = binoculars;
+
     }
 
     void OnChangedItem()
