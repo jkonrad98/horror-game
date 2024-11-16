@@ -15,7 +15,8 @@ public class FlashlightFlickerState : FlashlightBaseState
 
     public override void UpdateState()
     {
-        // Additional updates if necessary
+        _flashlightMgr.DrainBattery(2f);
+
     }
 
     public override void ExitState()

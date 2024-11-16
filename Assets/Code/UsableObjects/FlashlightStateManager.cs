@@ -15,6 +15,12 @@ public class FlashlightStateManager : UsableItem
     [SerializeField] private float _lerpDuration = 0.1f;
     private bool _isActive = true;
 
+    [Header("Battery Settings")]
+    [SerializeField] private float _currentBatteryLevel = 100f;
+    [SerializeField] private float _maxBatteryLevel = 100f;
+    [SerializeField] private float _drainRate= 1f;
+    [SerializeField] private float _dyingBatteryThreshold= 10f;
+
     [Header("Flicker Settings")]
     [SerializeField, Range(0.1f, 1f)] private float _minIntensity = 0.5f;
     [SerializeField, Range(1f, 10f)] private float _maxIntensity = 1.0f;
@@ -27,6 +33,7 @@ public class FlashlightStateManager : UsableItem
     [HideInInspector] public FlashlightOffState offState;
     [HideInInspector] public FlashlightOnState onState;
     [HideInInspector] public FlashlightFlickerState flickerState;
+    [HideInInspector] public FlashlightDyingState dyingState;
 
     void Awake()
     {
@@ -45,25 +52,30 @@ public class FlashlightStateManager : UsableItem
         offState = new FlashlightOffState(this);
         onState = new FlashlightOnState(this);
         flickerState = new FlashlightFlickerState(this);
+        dyingState = new FlashlightDyingState(this);
+
+        //Set Values
+        _currentBatteryLevel = _maxBatteryLevel;
     }
     public override void UseTheItem()
     {
-        if(currentState == offState)
-        {
-            SwitchState(onState);
-        }
-
-        else if(currentState == onState)
+        if (currentState == onState || currentState == dyingState || currentState == flickerState)
         {
             SwitchState(offState);
         }
-        //// Stop any current lerp in progress
-        //StopAllCoroutines();
 
-
-        //// Start the intensity lerp coroutine
-        //StartCoroutine(LerpLightIntensity(_isActive ? 5f : 0f));
-
+        else if (currentState == offState && _currentBatteryLevel > 0f)
+        {
+            if (_currentBatteryLevel <= _dyingBatteryThreshold)
+            {
+                SwitchState(dyingState);
+            }
+            else
+            {
+                SwitchState(onState);
+            }
+            
+        }
     }
     void Start()
     {
@@ -72,6 +84,7 @@ public class FlashlightStateManager : UsableItem
     }
     void FixedUpdate()
     {
+        //Handle position of flashlight
         transform.position = Vector3.Lerp(transform.position, _handPivot.position, _offsetSpeed * Time.deltaTime);
         Quaternion targetRotation = Quaternion.LookRotation(_targetToFollow.forward);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _offsetSpeed * Time.deltaTime);
@@ -82,6 +95,8 @@ public class FlashlightStateManager : UsableItem
         // Delegate update and input handling to the current state
         currentState.UpdateState();
         currentState.HandleInput();
+
+        if (_currentBatteryLevel <= 0f) return;
 
         if (PlayerInput.Instance.LightFlickerPressed)
         {
@@ -110,42 +125,38 @@ public class FlashlightStateManager : UsableItem
         currentState.EnterState();
     }
 
-    #region Setters
-    public void SetLightActive(bool isActive)
-    {
-        _flashlightLight.enabled = isActive;
-    }
 
-    public void SetLightIntensity(float intensity)
+    public void DrainBattery (float modifier)
     {
-        _flashlightLight.intensity = intensity;
+        _currentBatteryLevel -= (_drainRate * modifier) * Time.deltaTime;
+        _currentBatteryLevel = Mathf.Clamp(_currentBatteryLevel, 0f, _maxBatteryLevel);
+
+        // Check if battery is low and switch to DyingState
+        if (_currentBatteryLevel <= _dyingBatteryThreshold && currentState != dyingState)
+        {
+            SwitchState(dyingState);
+        }
+
+        // Check if battery is depleted and switch to OffState
+        if (_currentBatteryLevel <= 0f)
+        {
+            SwitchState(offState);
+        }
     }
+    #region Setters
+    public void SetLightActive(bool isActive) { _flashlightLight.enabled = isActive; }
+    public void SetLightIntensity(float intensity) { _flashlightLight.intensity = intensity; }
+    public void SetBatteryLevel(float batteryDrainAmount) { _currentBatteryLevel -= batteryDrainAmount; }
     #endregion
 
     #region Getters
-    public float GetMaxFlickerIntensity()
-    {
-        return _maxIntensity;
-    }
-    public float GetMinFlickerIntensity()
-    {
-        return _minIntensity;
-    }
-    public float GetFlickerSpeed()
-    {
-        return _flickerSpeed;
-    }
-    public float GetBaseLightIntensity()
-    {
-        return _baseLightStrength;
-    }
-    public float GetLightIntensity()
-    {
-        return _flashlightLight.intensity;
-    }
-    public float GetLerpDuration()
-    {
-        return _lerpDuration;
-    }
+    public float GetMaxFlickerIntensity() { return _maxIntensity; }
+    public float GetMinFlickerIntensity() { return _minIntensity; }
+    public float GetFlickerSpeed() { return _flickerSpeed; }
+    public float GetBaseLightIntensity() { return _baseLightStrength; }
+    public float GetLightIntensity() { return _flashlightLight.intensity; }
+    public float GetLerpDuration() { return _lerpDuration; }
+    public float GetBatteryLevel() { return _currentBatteryLevel; }
+    
     #endregion
 }
