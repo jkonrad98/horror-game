@@ -6319,7 +6319,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6591671423829325530, guid: 07018a687d5b0e747a522f46a53de652, type: 3}
       propertyPath: _maxIntensity
-      value: 3.01
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6591671423829325530, guid: 07018a687d5b0e747a522f46a53de652, type: 3}
+      propertyPath: _maxBatteryLevel
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6591671423829325530, guid: 07018a687d5b0e747a522f46a53de652, type: 3}
+      propertyPath: _currentBatteryLevel
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

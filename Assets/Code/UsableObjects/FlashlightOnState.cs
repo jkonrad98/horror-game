@@ -15,7 +15,7 @@ public class FlashlightOnState : FlashlightBaseState
 
     public override void UpdateState()
     {
-        // Steady light; could add battery drain here
+        _flashlightMgr.DrainBattery(1f);
     }
 
     public override void ExitState()
