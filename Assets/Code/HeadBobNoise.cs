@@ -7,22 +7,23 @@ public class HeadBobNoise : MonoBehaviour
 {
     private CinemachineVirtualCamera virtualCamera;
     private CinemachineBasicMultiChannelPerlin noise;
-    private Rigidbody rb;
+    //private Rigidbody rb;
 
     [SerializeField, Range(0, 2f)] private float noiseGain = 1f; 
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        //rb = GetComponent<Rigidbody>();
         virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
         noise = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
     }
     void FixedUpdate()
     {
-        if (rb.velocity.magnitude > 0.1f)
+        //if (rb.velocity.magnitude > 0.1f)
+        if (PlayerInput.Instance.MoveDirection.magnitude > 0.8f)
         {
-            noise.m_AmplitudeGain = noiseGain;
-            noise.m_FrequencyGain = noiseGain;
+        noise.m_AmplitudeGain = noiseGain;
+        noise.m_FrequencyGain = noiseGain;
         }
         else
         {

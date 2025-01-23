@@ -213,7 +213,7 @@ GameObject:
   - component: {fileID: 1427568594220488813}
   - component: {fileID: 6591671423829325530}
   m_Layer: 9
-  m_Name: FlashlightNew
+  m_Name: Flashlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -251,6 +251,10 @@ MonoBehaviour:
   _flashlightLight: {fileID: 0}
   _offsetSpeed: 8
   _lerpDuration: 0.1
+  _currentBatteryLevel: 10
+  _maxBatteryLevel: 20
+  _drainRate: 1
+  _dyingBatteryThreshold: 10
   _minIntensity: 0.5
-  _maxIntensity: 1
+  _maxIntensity: 4
   _flickerSpeed: 0.1
